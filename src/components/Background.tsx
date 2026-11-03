@@ -38,26 +38,41 @@ function Particles() {
   );
 }
 
-// The current baby's animated clip, filling the backdrop and crossfading between babies.
+// The current baby's animated clip behind the game, shown whole (uncropped) and crossfading between babies.
 function ClipBackdrop({ src }: { src?: string }) {
   return (
     <div className="absolute inset-0 motion-reduce:hidden" aria-hidden>
       <AnimatePresence>
         {src && (
-          <motion.video
+          <motion.div
             key={src}
-            src={src}
-            autoPlay
-            muted
-            loop
-            playsInline
-            disablePictureInPicture
-            initial={{ opacity: 0, scale: 1.08 }}
-            animate={{ opacity: 0.35, scale: 1 }}
+            initial={{ opacity: 0, scale: 1.04 }}
+            animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 1.2, ease: "easeOut" }}
-            className="absolute inset-0 h-full w-full object-cover blur-[6px] saturate-[1.1]"
-          />
+            className="absolute inset-0"
+          >
+            {/* blurred, zoomed fill so the screen has no empty bars */}
+            <video
+              src={src}
+              autoPlay
+              muted
+              loop
+              playsInline
+              disablePictureInPicture
+              className="absolute inset-0 h-full w-full scale-110 object-cover opacity-30 blur-2xl saturate-[1.2]"
+            />
+            {/* whole clip, never cropped, so the baby's face is always in view */}
+            <video
+              src={src}
+              autoPlay
+              muted
+              loop
+              playsInline
+              disablePictureInPicture
+              className="absolute inset-0 h-full w-full object-contain opacity-40 blur-[2px]"
+            />
+          </motion.div>
         )}
       </AnimatePresence>
     </div>

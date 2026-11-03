@@ -1,11 +1,13 @@
 import type { Person } from "../types";
 import { BLANK_ADULT } from "../lib/blank";
-import anim2 from "../assets/bg/anim-2.mp4";
-import anim3 from "../assets/bg/anim-3.mp4";
-import anim4 from "../assets/bg/anim-4.mp4";
-import anim5 from "../assets/bg/anim-5.mp4";
-import anim6 from "../assets/bg/anim-6.mp4";
-import anim7 from "../assets/bg/anim-7.mp4";
+import clip1 from "../assets/bg/clip-1.mp4";
+import clip2 from "../assets/bg/clip-2.mp4";
+import clip4 from "../assets/bg/clip-4.mp4";
+import clip5 from "../assets/bg/clip-5.mp4";
+import clip6 from "../assets/bg/clip-6.mp4";
+import clip7 from "../assets/bg/clip-7.mp4";
+import clip8 from "../assets/bg/clip-8.mp4";
+import clip11 from "../assets/bg/clip-11.mp4";
 import baby1 from "../assets/baby-1.jpg";
 import baby2 from "../assets/baby-2.jpg";
 import baby3 from "../assets/baby-3.jpg";
@@ -24,14 +26,14 @@ export const SAMPLE_PEOPLE: Person[] = [
     id: "sample-1",
     name: "",
     babyImage: baby1,
-    animation: anim2,
+    animation: clip1,
     adultImage: BLANK_ADULT,
   },
   {
     id: "sample-2",
     name: "",
     babyImage: baby2,
-    animation: anim4,
+    animation: clip2,
     adultImage: BLANK_ADULT,
   },
   {
@@ -44,33 +46,35 @@ export const SAMPLE_PEOPLE: Person[] = [
     id: "sample-4",
     name: "",
     babyImage: baby4,
+    animation: clip4,
     adultImage: BLANK_ADULT,
   },
   {
     id: "sample-5",
     name: "",
     babyImage: baby5,
+    animation: clip5,
     adultImage: BLANK_ADULT,
   },
   {
     id: "sample-6",
     name: "",
     babyImage: baby6,
-    animation: anim5,
+    animation: clip6,
     adultImage: BLANK_ADULT,
   },
   {
     id: "sample-7",
     name: "",
     babyImage: baby7,
-    animation: anim3,
+    animation: clip7,
     adultImage: BLANK_ADULT,
   },
   {
     id: "sample-8",
     name: "",
     babyImage: baby8,
-    animation: anim7,
+    animation: clip8,
     adultImage: BLANK_ADULT,
   },
   {
@@ -89,7 +93,7 @@ export const SAMPLE_PEOPLE: Person[] = [
     id: "sample-11",
     name: "",
     babyImage: baby11,
-    animation: anim6,
+    animation: clip11,
     adultImage: BLANK_ADULT,
   },
 ];
