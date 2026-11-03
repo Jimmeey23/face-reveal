@@ -4,9 +4,9 @@
 create table if not exists public.custom_people (
   id uuid primary key,
   user_id uuid default auth.uid() references auth.users(id) on delete cascade,
-  name text not null check (char_length(name) between 1 and 40),
+  name text check (char_length(name) between 1 and 40),
   baby_path text not null,
-  adult_path text not null,
+  adult_path text,
   fun_fact text check (fun_fact is null or char_length(fun_fact) <= 120),
   years_apart integer check (years_apart is null or years_apart between 1 and 999),
   created_at timestamptz not null default now()
@@ -14,6 +14,9 @@ create table if not exists public.custom_people (
 
 -- Older auth-based table required user_id; anonymous inserts have none.
 alter table public.custom_people alter column user_id drop not null;
+-- Only the baby photo is required; name and grown-up photo are optional.
+alter table public.custom_people alter column name drop not null;
+alter table public.custom_people alter column adult_path drop not null;
 
 alter table public.custom_people enable row level security;
 grant select, insert, delete on table public.custom_people to anon, authenticated;
@@ -34,7 +37,7 @@ begin
   if not exists (select 1 from pg_policies where schemaname = 'public' and tablename = 'custom_people' and policyname = 'Anyone can add custom people') then
     create policy "Anyone can add custom people"
       on public.custom_people for insert to anon, authenticated
-      with check (baby_path like (id::text || '/%') and adult_path like (id::text || '/%'));
+      with check (baby_path like (id::text || '/%') and (adult_path is null or adult_path like (id::text || '/%')));
   end if;
 
   if not exists (select 1 from pg_policies where schemaname = 'public' and tablename = 'custom_people' and policyname = 'Anyone can delete custom people') then
@@ -61,3 +64,7 @@ begin
       using (bucket_id = 'people-photos');
   end if;
 end $$;
+
+-- Update the insert policy if an earlier run created it requiring adult_path.
+alter policy "Anyone can add custom people" on public.custom_people
+  with check (baby_path like (id::text || '/%') and (adult_path is null or adult_path like (id::text || '/%')));

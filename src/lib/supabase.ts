@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Person } from "../types";
+import { BLANK_ADULT } from "./blank";
 
 const url = import.meta.env.VITE_SUPABASE_URL;
 const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -11,9 +12,9 @@ const supabase = isSupabaseConfigured ? createClient(url, anonKey) : null;
 
 type StoredPerson = {
   id: string;
-  name: string;
+  name: string | null;
   baby_path: string;
-  adult_path: string;
+  adult_path: string | null;
   fun_fact: string | null;
   years_apart: number | null;
 };
@@ -38,10 +39,13 @@ async function signedImageUrl(path: string) {
 }
 
 async function toPerson(row: StoredPerson): Promise<Person> {
-  const [babyImage, adultImage] = await Promise.all([signedImageUrl(row.baby_path), signedImageUrl(row.adult_path)]);
+  const [babyImage, adultImage] = await Promise.all([
+    signedImageUrl(row.baby_path),
+    row.adult_path ? signedImageUrl(row.adult_path) : BLANK_ADULT,
+  ]);
   return {
     id: row.id,
-    name: row.name,
+    name: row.name ?? "",
     babyImage,
     adultImage,
     funFact: row.fun_fact ?? undefined,
@@ -65,11 +69,13 @@ export async function saveCustomPerson(person: Person): Promise<Person> {
   const id = crypto.randomUUID();
   const basePath = id;
   const babyPath = `${basePath}/baby.jpg`;
-  const adultPath = `${basePath}/adult.jpg`;
+  const adultPath = person.adultImage ? `${basePath}/adult.jpg` : null;
   const uploadedPaths: string[] = [];
 
   try {
-    for (const [path, dataUrl] of [[babyPath, person.babyImage], [adultPath, person.adultImage]] as const) {
+    const files: [string, string][] = [[babyPath, person.babyImage]];
+    if (adultPath) files.push([adultPath, person.adultImage]);
+    for (const [path, dataUrl] of files) {
       const { error } = await client.storage.from(bucket).upload(path, await toImageBlob(dataUrl), {
         contentType: "image/jpeg",
         upsert: false,
@@ -82,7 +88,7 @@ export async function saveCustomPerson(person: Person): Promise<Person> {
       .from("custom_people")
       .insert({
         id,
-        name: person.name,
+        name: person.name || null,
         baby_path: babyPath,
         adult_path: adultPath,
         fun_fact: person.funFact ?? null,
@@ -110,6 +116,6 @@ export async function deleteCustomPerson(id: string): Promise<string | null> {
   const { error } = await client.from("custom_people").delete().eq("id", id);
   if (error) throw error;
 
-  const { error: storageError } = await client.storage.from(bucket).remove([data.baby_path, data.adult_path]);
+  const { error: storageError } = await client.storage.from(bucket).remove([data.baby_path, data.adult_path].filter(Boolean) as string[]);
   return storageError?.message ?? null;
 }

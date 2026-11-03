@@ -14,7 +14,7 @@ interface Props {
 }
 
 const EASE = "cubic-bezier(.4,0,.2,1)";
-const LAYER = "absolute inset-0 h-full w-full select-none object-cover";
+const LAYER = "absolute inset-0 h-full w-full select-none object-contain";
 
 function tr(animate: boolean, props: string[], ms: number, ease = EASE, delay = 0) {
   if (!animate) return "none";

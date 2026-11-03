@@ -120,9 +120,7 @@ export function PeopleManager({ open, onClose, people, disabledIds, onToggleDisa
   };
 
   const submit = async () => {
-    if (!name.trim()) return setError("Give this cutie a name.");
     if (!baby) return setError("Add a baby photo.");
-    if (!adult) return setError("Add a grown-up photo.");
     const y = parseInt(years, 10);
     setSaving(true);
     try {
@@ -130,7 +128,7 @@ export function PeopleManager({ open, onClose, people, disabledIds, onToggleDisa
         id: uid("custom"),
         name: name.trim(),
         babyImage: baby,
-        adultImage: adult,
+        adultImage: adult ?? "",
         funFact: funFact.trim() || undefined,
         yearsApart: Number.isFinite(y) && y > 0 ? y : undefined,
         custom: true,
@@ -162,7 +160,7 @@ export function PeopleManager({ open, onClose, people, disabledIds, onToggleDisa
               </span>
               <span>
                 <span className="block font-display text-lg font-semibold">Add your own baby</span>
-                <span className="block text-xs text-white/50">Upload a baby photo + a recent photo. Saved privately to Supabase.</span>
+                <span className="block text-xs text-white/50">Just a baby photo is enough. Name and grown-up photo are optional. Saved to Supabase.</span>
               </span>
             </span>
             <span className={cn("text-white/50 transition-transform", showForm && "rotate-90")}>
@@ -191,7 +189,7 @@ export function PeopleManager({ open, onClose, people, disabledIds, onToggleDisa
                       <ArrowRight size={22} />
                     </div>
                     <div className="relative">
-                      <Dropzone label="Grown-up photo" icon={<UserRound size={22} />} value={adult} onFile={(f) => handleFile("adult", f)} />
+                      <Dropzone label="Grown-up photo (optional)" icon={<UserRound size={22} />} value={adult} onFile={(f) => handleFile("adult", f)} />
                       {busy === "adult" && (
                         <span className="absolute inset-0 grid place-items-center rounded-2xl bg-black/50">
                           <Loader2 className="animate-spin" />
@@ -201,7 +199,7 @@ export function PeopleManager({ open, onClose, people, disabledIds, onToggleDisa
                   </div>
                   <div className="grid gap-3 sm:grid-cols-[1fr_7rem]">
                     <label className="block">
-                      <span className="mb-1 block text-xs font-bold text-white/60">Name *</span>
+                      <span className="mb-1 block text-xs font-bold text-white/60">Name (optional)</span>
                       <input
                         value={name}
                         onChange={(e) => setName(e.target.value)}
@@ -310,7 +308,7 @@ export function PeopleManager({ open, onClose, people, disabledIds, onToggleDisa
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <span className="truncate font-display text-base font-semibold">{p.name}</span>
+                      <span className="truncate font-display text-base font-semibold">{p.name || "Mystery baby"}</span>
                       <span
                         className={cn(
                           "rounded-md px-1.5 py-0.5 text-[10px] font-black tracking-wider uppercase",

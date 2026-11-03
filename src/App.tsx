@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "motion/react";
-import { Users } from "lucide-react";
+import { SlidersHorizontal, Users, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Background } from "./components/Background";
 import { Controls } from "./components/Controls";
@@ -80,6 +80,7 @@ export default function App() {
   const [timerPaused, setTimerPaused] = useState(false);
 
   const [showSettings, setShowSettings] = useState(false);
+  const [showControls, setShowControls] = useState(false);
   const [showPeople, setShowPeople] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
@@ -203,12 +204,12 @@ export default function App() {
   /* Quiz options                                                   */
   /* ------------------------------------------------------------ */
   const quizOptions = useMemo(() => {
-    if (!person) return [];
+    if (!person?.name) return [];
     const seen = new Set<string>([person.name.toLowerCase()]);
     const others: string[] = [];
     for (const p of shuffleArray(activeRef.current)) {
       const k = p.name.toLowerCase();
-      if (!seen.has(k)) {
+      if (k && !seen.has(k)) {
         seen.add(k);
         others.push(p.name);
       }
@@ -520,7 +521,7 @@ export default function App() {
       const saved = await saveCustomPerson(p);
       setCustomPeople((prev) => [...prev, saved]);
       setPeopleError(null);
-      showToast(`✨ Added ${saved.name} to the deck`);
+      showToast(`✨ Added ${saved.name || "a new baby"} to the deck`);
     } catch (error) {
       const message = error instanceof Error ? error.message : "Couldn't save this person to Supabase.";
       setPeopleError(message);
@@ -578,10 +579,10 @@ export default function App() {
 
       <main className="relative z-10 flex flex-1 items-center justify-center px-4 pt-6 pb-8 sm:px-6">
         {person ? (
-          <div className="grid w-full max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
-            {/* ---- Photo ---- */}
-            <div className="flex justify-center lg:justify-end">
-              <div className="w-[min(100%,23rem)] pt-8 sm:w-[min(100%,26rem)] lg:w-[clamp(20rem,54vh,30rem)]">
+          <div className="flex w-full justify-center">
+            {/* ---- Photo: as large as the viewport allows ---- */}
+            <div className="flex justify-center">
+              <div className="w-[min(100%,calc((100dvh-16rem)*0.75))] min-w-[16rem]">
                 <AnimatePresence mode="wait" custom={direction} initial={false}>
                   <motion.div
                     key={person.id}
@@ -615,11 +616,22 @@ export default function App() {
               </div>
             </div>
 
-            {/* ---- Side panel ---- */}
+            {/* ---- Controls: collapsed into a floating button, opens as a drawer ---- */}
+            <button
+              type="button"
+              onClick={() => setShowControls((v) => !v)}
+              aria-label={showControls ? "Hide controls" : "Show controls"}
+              className={cn(
+                "glass fixed right-4 bottom-4 z-40 grid h-12 w-12 place-items-center rounded-full shadow-lg transition-opacity duration-500",
+                idle && !showControls && "pointer-events-none opacity-0",
+              )}
+            >
+              {showControls ? <X size={20} /> : <SlidersHorizontal size={20} />}
+            </button>
             <div
               className={cn(
-                "flex w-full max-w-md flex-col gap-5 justify-self-center transition-all duration-500 lg:justify-self-start",
-                idle && "pointer-events-none translate-y-3 opacity-0",
+                "glass-strong fixed right-4 bottom-20 z-40 flex max-h-[calc(100dvh-7rem)] w-[min(calc(100vw-2rem),26rem)] flex-col gap-5 overflow-y-auto rounded-3xl p-4 shadow-2xl transition-all duration-300",
+                !showControls && "pointer-events-none translate-y-3 opacity-0",
               )}
             >
               <ProgressStrip deck={deck} index={index} revealed={revealed} answers={answers} onJump={(i) => goTo(i)} />

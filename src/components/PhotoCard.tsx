@@ -99,6 +99,13 @@ export function PhotoCard(props: Props) {
         style={{ rotateX: rx, rotateY: ry, transformStyle: "preserve-3d" }}
         className="relative"
       >
+        {/* Sticker: sits above the polaroid so it never covers the photo */}
+        {!(isRevealed && revealStyle === "hidden") && (
+          <div className="relative z-20 mb-4 w-[min(80%,19rem)]" style={{ transform: "translateZ(40px)" }}>
+            <Sticker variant={stickerVariant} name={person.name} hideName={revealStyle === "hidden" || !person.name} />
+          </div>
+        )}
+
         {/* Polaroid frame */}
         <div
           className={cn(
@@ -109,7 +116,7 @@ export function PhotoCard(props: Props) {
         >
           <div
             className={cn(
-              "relative aspect-square overflow-hidden rounded-[1rem] bg-neutral-200",
+              "relative aspect-[3/4] overflow-hidden rounded-[1rem] bg-neutral-200",
               phase === "counting" && "ring-2 ring-brand-1/40 ring-offset-2 ring-offset-white",
             )}
           >
@@ -191,24 +198,16 @@ export function PhotoCard(props: Props) {
               </>
             )}
           </div>
+          {/* Tape */}
+          <div
+            className="animate-tape pointer-events-none absolute top-0 left-1/2 h-7 w-28 bg-[rgba(255,236,170,.72)] shadow-md backdrop-blur-[1px]"
+            style={{
+              transform: "translate(-50%,-50%) rotate(-3deg)",
+              clipPath: "polygon(1% 0, 99% 5%, 100% 100%, 0 95%)",
+              backgroundImage: "repeating-linear-gradient(90deg, rgba(255,255,255,.25) 0 2px, transparent 2px 6px)",
+            }}
+          />
         </div>
-
-        {/* Tape */}
-        <div
-          className="animate-tape pointer-events-none absolute top-0 left-1/2 h-7 w-28 bg-[rgba(255,236,170,.72)] shadow-md backdrop-blur-[1px]"
-          style={{
-            transform: "translate(-50%,-50%) rotate(-3deg)",
-            clipPath: "polygon(1% 0, 99% 5%, 100% 100%, 0 95%)",
-            backgroundImage: "repeating-linear-gradient(90deg, rgba(255,255,255,.25) 0 2px, transparent 2px 6px)",
-          }}
-        />
-
-        {/* Sticker */}
-        {!(isRevealed && revealStyle === "hidden") && (
-          <div className="absolute -top-9 left-0 z-20 w-[min(72%,19rem)] sm:-top-10 sm:-left-8" style={{ transform: "translateZ(40px)" }}>
-            <Sticker variant={stickerVariant} name={person.name} hideName={revealStyle === "hidden" || !person.name} />
-          </div>
-        )}
 
         {/* Timer */}
         {showTimer && (

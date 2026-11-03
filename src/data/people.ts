@@ -1,4 +1,5 @@
 import type { Person } from "../types";
+import { BLANK_ADULT } from "../lib/blank";
 import baby1 from "../assets/baby-1.jpg";
 import baby2 from "../assets/baby-2.jpg";
 import baby3 from "../assets/baby-3.jpg";
@@ -9,8 +10,6 @@ import baby7 from "../assets/baby-7.jpg";
 import baby8 from "../assets/baby-8.jpg";
 import baby9 from "../assets/baby-9.jpg";
 
-// No name or adult photo yet: the reveal shows a blank card (sound + confetti still play).
-const BLANK_ADULT = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"><rect width="1" height="1" fill="#fff"/></svg>')}`;
 
 export const SAMPLE_PEOPLE: Person[] = [
   {
