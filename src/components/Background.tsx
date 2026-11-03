@@ -38,38 +38,27 @@ function Particles() {
   );
 }
 
-const SIDE_CLIP = "block w-full rounded-xl object-contain shadow-[0_24px_50px_-16px_rgba(0,0,0,.8)]";
-
-// The current baby's animated clip: a blurred full-screen fill (so small clips still cover the
-// background, at 15% opacity) plus one sharp, uncropped copy beside the photo frame, never behind it.
+// The current baby's animated clip filling the whole background, behind the photo card.
+// Faded and softly blurred so the photo stays the highlight; framed toward the top, where faces are.
 function ClipBackdrop({ src }: { src?: string }) {
   return (
     <div className="absolute inset-0 motion-reduce:hidden" aria-hidden>
       <AnimatePresence>
         {src && (
-          <motion.div
+          <motion.video
             key={src}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            src={src}
+            autoPlay
+            muted
+            loop
+            playsInline
+            disablePictureInPicture
+            initial={{ opacity: 0, scale: 1.06 }}
+            animate={{ opacity: 0.3, scale: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 1.2, ease: "easeOut" }}
-            className="absolute inset-0"
-          >
-            <video
-              src={src}
-              autoPlay
-              muted
-              loop
-              playsInline
-              disablePictureInPicture
-              className="absolute inset-0 h-full w-full scale-125 object-cover opacity-15 blur-3xl saturate-[1.3]"
-            />
-            <div className="absolute inset-y-0 left-0 hidden w-[calc(50vw-min(22vw,17rem))] items-center justify-center p-[3vw] lg:flex">
-              <motion.div initial={{ x: -40, rotate: -6 }} animate={{ x: 0, rotate: -3 }} transition={{ duration: 1.2 }} className="w-full max-w-[22rem]">
-                <video src={src} autoPlay muted loop playsInline disablePictureInPicture className={`${SIDE_CLIP} max-h-[70dvh] opacity-80`} />
-              </motion.div>
-            </div>
-          </motion.div>
+            className="absolute inset-0 h-full w-full object-cover object-[50%_30%] blur-[3px] saturate-[1.15]"
+          />
         )}
       </AnimatePresence>
     </div>
