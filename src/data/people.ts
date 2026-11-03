@@ -7,6 +7,7 @@ import clip5 from "../assets/bg/clip-5.mp4";
 import clip6 from "../assets/bg/clip-6.mp4";
 import clip7 from "../assets/bg/clip-7.mp4";
 import clip8 from "../assets/bg/clip-8.mp4";
+import clip9 from "../assets/bg/clip-9.mp4";
 import clip11 from "../assets/bg/clip-11.mp4";
 import baby1 from "../assets/baby-1.jpg";
 import baby2 from "../assets/baby-2.jpg";
@@ -81,6 +82,7 @@ export const SAMPLE_PEOPLE: Person[] = [
     id: "sample-9",
     name: "",
     babyImage: baby9,
+    animation: clip9,
     adultImage: BLANK_ADULT,
   },
   {
