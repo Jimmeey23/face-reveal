@@ -1,4 +1,11 @@
 import { memo, useMemo } from "react";
+import anim1 from "../assets/bg/anim-1.mp4";
+import anim2 from "../assets/bg/anim-2.mp4";
+import anim3 from "../assets/bg/anim-3.mp4";
+import anim4 from "../assets/bg/anim-4.mp4";
+import anim5 from "../assets/bg/anim-5.mp4";
+import anim6 from "../assets/bg/anim-6.mp4";
+import anim7 from "../assets/bg/anim-7.mp4";
 
 const EMOJIS = ["👶", "🍼", "🧸", "✨", "🎈", "⭐", "🎀", "🌈"];
 
@@ -37,6 +44,47 @@ function Particles() {
   );
 }
 
+// Animated baby clips as floating polaroids around the edges, kept clear of the centre photo.
+const CLIPS: { src: string; top: string; left: string; w: string; rotate: number; duration: number; delay: number }[] = [
+  { src: anim1, top: "8%", left: "3%", w: "clamp(7rem,12vw,11rem)", rotate: -8, duration: 9, delay: 0 },
+  { src: anim2, top: "58%", left: "6%", w: "clamp(7rem,11vw,10rem)", rotate: 6, duration: 11, delay: -3 },
+  { src: anim3, top: "36%", left: "-2%", w: "clamp(8rem,14vw,13rem)", rotate: -4, duration: 10, delay: -6 },
+  { src: anim4, top: "6%", left: "84%", w: "clamp(7rem,11vw,10rem)", rotate: 7, duration: 12, delay: -2 },
+  { src: anim5, top: "40%", left: "88%", w: "clamp(7rem,11vw,10rem)", rotate: -6, duration: 9.5, delay: -5 },
+  { src: anim6, top: "70%", left: "80%", w: "clamp(8rem,14vw,13rem)", rotate: 5, duration: 10.5, delay: -7 },
+  { src: anim7, top: "78%", left: "30%", w: "clamp(6rem,9vw,8.5rem)", rotate: -9, duration: 11.5, delay: -4 },
+];
+
+function ClipCollage() {
+  return (
+    <div className="absolute inset-0 overflow-hidden motion-reduce:hidden" aria-hidden>
+      {CLIPS.map((c, i) => (
+        <div
+          key={i}
+          className="animate-float absolute"
+          style={{ top: c.top, left: c.left, width: c.w, animationDuration: `${c.duration}s`, animationDelay: `${c.delay}s` }}
+        >
+          <div
+            className="rounded-xl bg-white/90 p-1.5 pb-4 opacity-45 shadow-[0_20px_40px_-12px_rgba(0,0,0,.7)] blur-[0.5px] saturate-[.9]"
+            style={{ transform: `rotate(${c.rotate}deg)` }}
+          >
+            <video
+              src={c.src}
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              disablePictureInPicture
+              className="block aspect-[3/4] w-full rounded-lg object-cover"
+            />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export const Background = memo(function Background({ particles }: { particles: boolean }) {
   return (
     <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden" aria-hidden>
@@ -61,6 +109,7 @@ export const Background = memo(function Background({ particles }: { particles: b
         className="animate-drift absolute -bottom-40 left-1/3 h-[40vmax] w-[40vmax] rounded-full opacity-35 blur-[110px]"
         style={{ background: "var(--c2)", animationDuration: "31s", animationDelay: "-20s" }}
       />
+      <ClipCollage />
       {/* soft vignette */}
       <div
         className="absolute inset-0"
