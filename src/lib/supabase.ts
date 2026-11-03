@@ -25,18 +25,6 @@ function getClient() {
   return supabase;
 }
 
-async function getUserId() {
-  const client = getClient();
-  const { data: { user }, error: sessionError } = await client.auth.getUser();
-  if (sessionError) throw sessionError;
-  if (user) return user.id;
-
-  const { data, error } = await client.auth.signInAnonymously();
-  if (error) throw new Error(`Couldn't start a private Supabase session: ${error.message}`);
-  if (!data.user) throw new Error("Supabase did not return a user session.");
-  return data.user.id;
-}
-
 async function toImageBlob(dataUrl: string) {
   const response = await fetch(dataUrl);
   if (!response.ok) throw new Error("Couldn't prepare the selected photo for upload.");
@@ -64,7 +52,6 @@ async function toPerson(row: StoredPerson): Promise<Person> {
 
 export async function loadCustomPeople(): Promise<Person[]> {
   const client = getClient();
-  await getUserId();
   const { data, error } = await client
     .from("custom_people")
     .select("id, name, baby_path, adult_path, fun_fact, years_apart")
@@ -75,9 +62,8 @@ export async function loadCustomPeople(): Promise<Person[]> {
 
 export async function saveCustomPerson(person: Person): Promise<Person> {
   const client = getClient();
-  const userId = await getUserId();
   const id = crypto.randomUUID();
-  const basePath = `${userId}/${id}`;
+  const basePath = id;
   const babyPath = `${basePath}/baby.jpg`;
   const adultPath = `${basePath}/adult.jpg`;
   const uploadedPaths: string[] = [];
@@ -114,7 +100,6 @@ export async function saveCustomPerson(person: Person): Promise<Person> {
 
 export async function deleteCustomPerson(id: string): Promise<string | null> {
   const client = getClient();
-  await getUserId();
   const { data, error: readError } = await client
     .from("custom_people")
     .select("baby_path, adult_path")

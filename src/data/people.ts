@@ -1,54 +1,68 @@
 import type { Person } from "../types";
-import mayaBaby from "../assets/maya-baby.jpg";
-import mayaAdult from "../assets/maya-adult.jpg";
-import leoBaby from "../assets/leo-baby.jpg";
-import leoAdult from "../assets/leo-adult.jpg";
-import aikoBaby from "../assets/aiko-baby.jpg";
-import aikoAdult from "../assets/aiko-adult.jpg";
-import samBaby from "../assets/sam-baby.jpg";
-import samAdult from "../assets/sam-adult.jpg";
-import priyaBaby from "../assets/priya-baby.jpg";
-import priyaAdult from "../assets/priya-adult.jpg";
+import baby1 from "../assets/baby-1.jpg";
+import baby2 from "../assets/baby-2.jpg";
+import baby3 from "../assets/baby-3.jpg";
+import baby4 from "../assets/baby-4.jpg";
+import baby5 from "../assets/baby-5.jpg";
+import baby6 from "../assets/baby-6.jpg";
+import baby7 from "../assets/baby-7.jpg";
+import baby8 from "../assets/baby-8.jpg";
+import baby9 from "../assets/baby-9.jpg";
 
+// TODO: set real names and adult photos.
 export const SAMPLE_PEOPLE: Person[] = [
   {
-    id: "sample-maya",
-    name: "Maya",
-    babyImage: mayaBaby,
-    adultImage: mayaAdult,
-    funFact: "Still laughs exactly like this — usually at her own jokes.",
-    yearsApart: 27,
+    id: "sample-1",
+    name: "Person 1",
+    babyImage: baby1,
+    adultImage: baby1,
   },
   {
-    id: "sample-leo",
-    name: "Leo",
-    babyImage: leoBaby,
-    adultImage: leoAdult,
-    funFact: "Has owned a green sweater every single year since this photo.",
-    yearsApart: 29,
+    id: "sample-2",
+    name: "Person 2",
+    babyImage: baby2,
+    adultImage: baby2,
   },
   {
-    id: "sample-aiko",
-    name: "Aiko",
-    babyImage: aikoBaby,
-    adultImage: aikoAdult,
-    funFact: "The bangs never left. Not once. Iconic.",
-    yearsApart: 26,
+    id: "sample-3",
+    name: "Person 3",
+    babyImage: baby3,
+    adultImage: baby3,
   },
   {
-    id: "sample-sam",
-    name: "Sam",
-    babyImage: samBaby,
-    adultImage: samAdult,
-    funFact: "Was voted 'most likely to still wear stripes' — and delivered.",
-    yearsApart: 31,
+    id: "sample-4",
+    name: "Person 4",
+    babyImage: baby4,
+    adultImage: baby4,
   },
   {
-    id: "sample-priya",
-    name: "Priya",
-    babyImage: priyaBaby,
-    adultImage: priyaAdult,
-    funFact: "Purple was her favorite color then, and it's her favorite color now.",
-    yearsApart: 28,
+    id: "sample-5",
+    name: "Person 5",
+    babyImage: baby5,
+    adultImage: baby5,
+  },
+  {
+    id: "sample-6",
+    name: "Person 6",
+    babyImage: baby6,
+    adultImage: baby6,
+  },
+  {
+    id: "sample-7",
+    name: "Person 7",
+    babyImage: baby7,
+    adultImage: baby7,
+  },
+  {
+    id: "sample-8",
+    name: "Person 8",
+    babyImage: baby8,
+    adultImage: baby8,
+  },
+  {
+    id: "sample-9",
+    name: "Person 9",
+    babyImage: baby9,
+    adultImage: baby9,
   },
 ];
