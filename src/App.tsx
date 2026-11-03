@@ -590,8 +590,8 @@ export default function App() {
         {person ? (
           <div className="flex w-full justify-center">
             {/* ---- Photo: as large as the viewport allows ---- */}
-            <div className="flex justify-center">
-              <div className="w-[min(100%,calc((100dvh-23rem)*0.75))] min-w-[14rem]">
+            <div className="flex w-full justify-center">
+              <div className="w-[min(100%,calc((100dvh-19rem)*0.75))] min-w-[15rem] lg:w-[min(100%,calc((100dvh-15rem)*0.75))]">
                 <AnimatePresence mode="wait" custom={direction} initial={false}>
                   <motion.div
                     key={person.id}

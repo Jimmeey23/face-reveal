@@ -99,9 +99,9 @@ export function PhotoCard(props: Props) {
         style={{ rotateX: rx, rotateY: ry, transformStyle: "preserve-3d" }}
         className="relative"
       >
-        {/* Sticker: sits above the polaroid so it never covers the photo */}
+        {/* Sticker: above the polaroid on small screens, beside it on wide ones; never covers the photo */}
         {!(isRevealed && revealStyle === "hidden") && (
-          <div className="relative z-20 mb-4 w-[min(80%,19rem)]" style={{ transform: "translateZ(40px)" }}>
+          <div className="relative z-20 mb-4 w-[min(80%,19rem)] lg:absolute lg:top-4 lg:right-full lg:mr-8 lg:mb-0 lg:w-[17rem]" style={{ transform: "translateZ(40px)" }}>
             <Sticker variant={stickerVariant} seed={person.id} name={person.name} hideName={revealStyle === "hidden" || !person.name} />
           </div>
         )}
@@ -163,7 +163,7 @@ export function PhotoCard(props: Props) {
           </div>
 
           {/* Caption */}
-          <div className="flex min-h-[5.2rem] flex-col items-center justify-center px-3 pt-3 pb-1 text-center">
+          <div className="flex min-h-[4rem] flex-col items-center justify-center px-3 pt-3 pb-1 text-center">
             {isRevealed ? (
               <>
                 {revealStyle !== "hidden" && person.name && (
