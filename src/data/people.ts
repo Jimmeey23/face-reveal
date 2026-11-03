@@ -9,6 +9,8 @@ import baby6 from "../assets/baby-6.jpg";
 import baby7 from "../assets/baby-7.jpg";
 import baby8 from "../assets/baby-8.jpg";
 import baby9 from "../assets/baby-9.jpg";
+import baby10 from "../assets/baby-10.jpg";
+import baby11 from "../assets/baby-11.jpg";
 
 
 export const SAMPLE_PEOPLE: Person[] = [
@@ -64,6 +66,18 @@ export const SAMPLE_PEOPLE: Person[] = [
     id: "sample-9",
     name: "",
     babyImage: baby9,
+    adultImage: BLANK_ADULT,
+  },
+  {
+    id: "sample-10",
+    name: "",
+    babyImage: baby10,
+    adultImage: BLANK_ADULT,
+  },
+  {
+    id: "sample-11",
+    name: "",
+    babyImage: baby11,
     adultImage: BLANK_ADULT,
   },
 ];

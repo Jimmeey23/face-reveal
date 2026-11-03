@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "motion/react";
-import { SlidersHorizontal, Users, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Eye, Maximize, Minimize, Pause, Play, RotateCcw, Settings as SettingsIcon, Shuffle, SlidersHorizontal, Square, Users, Volume2, VolumeX, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Background } from "./components/Background";
 import { Controls } from "./components/Controls";
@@ -384,6 +384,15 @@ export default function App() {
     sound.start();
   };
 
+  const stopShow = () => {
+    setShowControls(false);
+    setTimerPaused(false);
+    buildDeck(settings.shuffle);
+    setStarted(false);
+    if (isFullscreen) void toggleFullscreen();
+    sound.swoosh();
+  };
+
   const restart = (shuffle = settings.shuffle) => {
     buildDeck(shuffle);
     sound.swoosh();
@@ -577,7 +586,7 @@ export default function App() {
         hidden={idle}
       />
 
-      <main className="relative z-10 flex flex-1 items-center justify-center px-4 pt-6 pb-8 sm:px-6">
+      <main className="relative z-10 flex flex-1 items-center justify-center px-4 pt-6 pb-24 sm:px-6">
         {person ? (
           <div className="flex w-full justify-center">
             {/* ---- Photo: as large as the viewport allows ---- */}
@@ -617,17 +626,60 @@ export default function App() {
             </div>
 
             {/* ---- Controls: collapsed into a floating button, opens as a drawer ---- */}
-            <button
-              type="button"
-              onClick={() => setShowControls((v) => !v)}
-              aria-label={showControls ? "Hide controls" : "Show controls"}
+            <div
               className={cn(
-                "glass fixed right-4 bottom-4 z-40 grid h-12 w-12 place-items-center rounded-full shadow-lg transition-opacity duration-500",
+                "glass-strong fixed bottom-4 left-1/2 z-40 flex max-w-[calc(100vw-2rem)] -translate-x-1/2 items-center gap-1 overflow-x-auto rounded-full p-1.5 shadow-2xl transition-opacity duration-500",
                 idle && !showControls && "pointer-events-none opacity-0",
               )}
             >
-              {showControls ? <X size={20} /> : <SlidersHorizontal size={20} />}
-            </button>
+              <ToolButton label="Stop show" onClick={stopShow} className="text-rose-300">
+                <Square size={18} fill="currentColor" />
+              </ToolButton>
+              <ToolButton label="Restart" onClick={() => restart(false)}>
+                <RotateCcw size={18} />
+              </ToolButton>
+              <ToolButton label="Shuffle & restart" onClick={() => restart(true)}>
+                <Shuffle size={18} />
+              </ToolButton>
+              <span className="mx-1 h-6 w-px bg-white/15" />
+              <ToolButton label="Previous" onClick={prev} disabled={isFirst}>
+                <ChevronLeft size={20} />
+              </ToolButton>
+              <button
+                type="button"
+                onClick={primary}
+                className="brand-gradient flex h-10 shrink-0 items-center gap-1.5 rounded-full px-4 font-display text-sm font-bold shadow-lg transition active:scale-95"
+              >
+                {phase === "revealed" ? (
+                  <>{isLast ? "Results" : "Next"} <ChevronRight size={16} /></>
+                ) : phase === "idle" && settings.mode === "timer" ? (
+                  <><Play size={16} fill="currentColor" /> Start</>
+                ) : (
+                  <><Eye size={16} /> Reveal</>
+                )}
+              </button>
+              <ToolButton label="Next" onClick={next}>
+                <ChevronRight size={20} />
+              </ToolButton>
+              {phase === "counting" && (
+                <ToolButton label={timerPaused ? "Resume timer" : "Pause timer"} onClick={timerClick}>
+                  {timerPaused ? <Play size={18} /> : <Pause size={18} />}
+                </ToolButton>
+              )}
+              <span className="mx-1 h-6 w-px bg-white/15" />
+              <ToolButton label={settings.sound ? "Mute" : "Unmute"} onClick={toggleSound}>
+                {settings.sound ? <Volume2 size={18} /> : <VolumeX size={18} />}
+              </ToolButton>
+              <ToolButton label={isFullscreen ? "Exit fullscreen" : "Fullscreen"} onClick={() => void toggleFullscreen()}>
+                {isFullscreen ? <Minimize size={18} /> : <Maximize size={18} />}
+              </ToolButton>
+              <ToolButton label="Settings" onClick={() => setShowSettings(true)}>
+                <SettingsIcon size={18} />
+              </ToolButton>
+              <ToolButton label={showControls ? "Hide advanced controls" : "Advanced controls"} onClick={() => setShowControls((v) => !v)} active={showControls}>
+                {showControls ? <X size={18} /> : <SlidersHorizontal size={18} />}
+              </ToolButton>
+            </div>
             <div
               className={cn(
                 "glass-strong fixed right-4 bottom-20 z-40 flex max-h-[calc(100dvh-7rem)] w-[min(calc(100vw-2rem),26rem)] flex-col gap-5 overflow-y-auto rounded-3xl p-4 shadow-2xl transition-all duration-300",
@@ -756,5 +808,38 @@ export default function App() {
 
       <Toast message={toast} />
     </div>
+  );
+}
+
+function ToolButton({
+  label,
+  onClick,
+  disabled,
+  active,
+  className,
+  children,
+}: {
+  label: string;
+  onClick: () => void;
+  disabled?: boolean;
+  active?: boolean;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      title={label}
+      aria-label={label}
+      onClick={onClick}
+      disabled={disabled}
+      className={cn(
+        "grid h-10 w-10 shrink-0 place-items-center rounded-full transition hover:bg-white/15 active:scale-95 disabled:pointer-events-none disabled:opacity-30",
+        active && "bg-white/20",
+        className,
+      )}
+    >
+      {children}
+    </button>
   );
 }
