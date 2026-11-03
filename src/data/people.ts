@@ -22,6 +22,8 @@ import baby8 from "../assets/baby-8.jpg";
 import baby9 from "../assets/baby-9.jpg";
 import baby10 from "../assets/baby-10.jpg";
 import baby11 from "../assets/baby-11.jpg";
+import baby12 from "../assets/baby-12.jpg";
+import baby13 from "../assets/baby-13.jpg";
 
 
 export const SAMPLE_PEOPLE: Person[] = [
@@ -98,6 +100,18 @@ export const SAMPLE_PEOPLE: Person[] = [
     name: "",
     babyImage: baby11,
     animations: [clip11],
+    adultImage: BLANK_ADULT,
+  },
+  {
+    id: "sample-12",
+    name: "",
+    babyImage: baby12,
+    adultImage: BLANK_ADULT,
+  },
+  {
+    id: "sample-13",
+    name: "",
+    babyImage: baby13,
     adultImage: BLANK_ADULT,
   },
 ];
