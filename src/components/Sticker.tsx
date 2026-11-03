@@ -8,6 +8,33 @@ interface Props {
   name?: string;
   hideName?: boolean;
   className?: string;
+  /** Picks this baby's own question line, so each baby gets a different badge. */
+  seed?: string;
+}
+
+const QUESTIONS: [string, string][] = [
+  ["Who's this teeny tiny troublemaker?", "👶"],
+  ["Guess who had these chubby cheeks!", "🍼"],
+  ["Who was this little cutie pie?", "🥧"],
+  ["Spot the grown-up hiding in here!", "🔍"],
+  ["Who's this pocket-sized superstar?", "⭐"],
+  ["Name this bundle of giggles!", "😆"],
+  ["Who stole all the cuteness?", "🧸"],
+  ["Psst… who's this little munchkin?", "🤫"],
+  ["Who's this tiny heart-melter?", "💖"],
+  ["Guess the baby, win bragging rights!", "🏅"],
+  ["Who's this mini mischief-maker?", "😜"],
+  ["Who rocked this adorable look?", "🎀"],
+  ["Who's this little bundle of joy?", "🎁"],
+  ["Peekaboo! Who's this sweetie?", "🙈"],
+  ["Who's this snuggly little bean?", "🫘"],
+  ["Recognise this tiny face?", "🐣"],
+];
+
+function hashSeed(seed: string) {
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) | 0;
+  return Math.abs(h);
 }
 
 const CONTENT: Record<StickerVariant, { text: (n: string, hideName: boolean) => string; emoji: string; bg: string; tail: string }> = {
@@ -43,12 +70,14 @@ const CONTENT: Record<StickerVariant, { text: (n: string, hideName: boolean) => 
   },
 };
 
-export function Sticker({ variant, name = "", hideName = false, className }: Props) {
-  const c = CONTENT[variant];
+export function Sticker({ variant, name = "", hideName = false, className, seed }: Props) {
+  const base = CONTENT[variant];
+  const q = variant === "question" && seed ? QUESTIONS[hashSeed(seed) % QUESTIONS.length] : null;
+  const c = q ? { ...base, text: () => q[0], emoji: q[1] } : base;
   return (
     <AnimatePresence mode="wait">
       <motion.div
-        key={variant}
+        key={q ? `${variant}-${seed}` : variant}
         initial={{ scale: 0, rotate: -35, opacity: 0 }}
         animate={{ scale: 1, rotate: 0, opacity: 1 }}
         exit={{ scale: 0, rotate: 25, opacity: 0 }}

@@ -102,7 +102,7 @@ export function PhotoCard(props: Props) {
         {/* Sticker: sits above the polaroid so it never covers the photo */}
         {!(isRevealed && revealStyle === "hidden") && (
           <div className="relative z-20 mb-4 w-[min(80%,19rem)]" style={{ transform: "translateZ(40px)" }}>
-            <Sticker variant={stickerVariant} name={person.name} hideName={revealStyle === "hidden" || !person.name} />
+            <Sticker variant={stickerVariant} seed={person.id} name={person.name} hideName={revealStyle === "hidden" || !person.name} />
           </div>
         )}
 
