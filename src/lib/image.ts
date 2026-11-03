@@ -18,8 +18,8 @@ async function findFace(img: HTMLImageElement): Promise<{ x: number; y: number }
 }
 
 /**
- * Reads an image file, crops it to the 3:4 photo frame around the face (or the
- * upper-centre, where faces usually are) and encodes a high-quality JPEG data URL.
+ * Reads an image file, crops it to the 3:4 photo frame with the face (or the
+ * upper-centre, where faces usually are) dead-centre, and encodes a high-quality JPEG data URL.
  */
 export function compressImageFile(file: File, width = 1200, quality = 0.9): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -33,14 +33,14 @@ export function compressImageFile(file: File, width = 1200, quality = 0.9): Prom
       try {
         const W = img.naturalWidth;
         const H = img.naturalHeight;
-        const cw = Math.min(W, (H * 3) / 4);
-        const ch = (cw * 4) / 3;
         const face = (await findFace(img)) ?? { x: 0.5, y: 0.35 };
-        const sx = Math.min(Math.max(face.x * W - cw / 2, 0), W - cw);
-        const sy = Math.min(Math.max(face.y * H - ch * 0.42, 0), H - ch);
+        // Crop window (in source px) that puts the face dead-centre; may extend past the photo's edges.
+        const cw = Math.min(W, (H * 3) / 4) * 0.85;
+        const ch = (cw * 4) / 3;
         // Never upscale: keep the source's own resolution if it is smaller.
         const outW = Math.round(Math.min(width, cw));
         const outH = Math.round((outW * 4) / 3);
+        const scale = outW / cw;
         const canvas = document.createElement("canvas");
         canvas.width = outW;
         canvas.height = outH;
@@ -48,7 +48,12 @@ export function compressImageFile(file: File, width = 1200, quality = 0.9): Prom
         if (!ctx) throw new Error("Canvas not supported");
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = "high";
-        ctx.drawImage(img, sx, sy, cw, ch, 0, 0, outW, outH);
+        // Blurred cover fill for any part of the frame outside the photo.
+        const cover = Math.max(outW / W, outH / H);
+        ctx.filter = "blur(24px)";
+        ctx.drawImage(img, (outW - W * cover) / 2, (outH - H * cover) / 2, W * cover, H * cover);
+        ctx.filter = "none";
+        ctx.drawImage(img, outW / 2 - face.x * W * scale, outH / 2 - face.y * H * scale, W * scale, H * scale);
         resolve(canvas.toDataURL("image/jpeg", quality));
       } catch (e) {
         reject(e);
