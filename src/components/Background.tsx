@@ -71,7 +71,7 @@ function ClipBackdrop({ src }: { src?: string }) {
             </div>
             <div className="absolute inset-y-0 right-0 hidden w-[calc(50vw-min(22vw,17rem))] items-center justify-center p-[3vw] lg:flex">
               <motion.div initial={{ x: 40, rotate: 6 }} animate={{ x: 0, rotate: 3 }} transition={{ duration: 1.2 }} className="w-full max-w-[22rem]">
-                <video src={src} autoPlay muted loop playsInline disablePictureInPicture className={`${SIDE_CLIP} max-h-[70dvh] scale-x-[-1] opacity-80`} />
+                <video src={src} autoPlay muted loop playsInline disablePictureInPicture className={`${SIDE_CLIP} max-h-[70dvh] opacity-80`} />
               </motion.div>
             </div>
           </motion.div>

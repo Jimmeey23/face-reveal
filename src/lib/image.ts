@@ -34,13 +34,19 @@ export function compressImageFile(file: File, width = 1200, quality = 0.9): Prom
         const W = img.naturalWidth;
         const H = img.naturalHeight;
         const face = (await findFace(img)) ?? { x: 0.5, y: 0.35 };
-        // Crop window (in source px) that puts the face dead-centre; may extend past the photo's edges.
-        const cw = Math.min(W, (H * 3) / 4) * 0.85;
+        // Largest 3:4 crop that keeps the face dead-centre without leaving the photo,
+        // but never tighter than ~420px (then the face drifts off-centre instead of going blurry).
+        const fx = face.x * W;
+        const fy = face.y * H;
+        const maxW = Math.min(W, (H * 3) / 4);
+        const fitW = Math.min(2 * Math.min(fx, W - fx), ((2 * Math.min(fy, H - fy)) * 3) / 4);
+        const cw = Math.max(Math.min(maxW * 0.85, fitW), Math.min(420, maxW));
         const ch = (cw * 4) / 3;
+        const sx = Math.min(Math.max(fx - cw / 2, 0), W - cw);
+        const sy = Math.min(Math.max(fy - ch / 2, 0), H - ch);
         // Never upscale: keep the source's own resolution if it is smaller.
         const outW = Math.round(Math.min(width, cw));
         const outH = Math.round((outW * 4) / 3);
-        const scale = outW / cw;
         const canvas = document.createElement("canvas");
         canvas.width = outW;
         canvas.height = outH;
@@ -48,12 +54,7 @@ export function compressImageFile(file: File, width = 1200, quality = 0.9): Prom
         if (!ctx) throw new Error("Canvas not supported");
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = "high";
-        // Blurred cover fill for any part of the frame outside the photo.
-        const cover = Math.max(outW / W, outH / H);
-        ctx.filter = "blur(24px)";
-        ctx.drawImage(img, (outW - W * cover) / 2, (outH - H * cover) / 2, W * cover, H * cover);
-        ctx.filter = "none";
-        ctx.drawImage(img, outW / 2 - face.x * W * scale, outH / 2 - face.y * H * scale, W * scale, H * scale);
+        ctx.drawImage(img, sx, sy, cw, ch, 0, 0, outW, outH);
         resolve(canvas.toDataURL("image/jpeg", quality));
       } catch (e) {
         reject(e);
