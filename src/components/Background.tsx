@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "motion/react";
-import { memo, useMemo } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 
 const EMOJIS = ["👶", "🍼", "🧸", "✨", "🎈", "⭐", "🎀", "🌈"];
 
@@ -38,9 +38,13 @@ function Particles() {
   );
 }
 
-// The current baby's animated clip filling the whole background, behind the photo card.
-// Faded and softly blurred so the photo stays the highlight; framed toward the top, where faces are.
-function ClipBackdrop({ src }: { src?: string }) {
+// The current baby's animated clips filling the whole background, behind the photo card.
+// With several clips they play in turn. Faded and softly blurred so the photo stays the highlight.
+function ClipBackdrop({ clips }: { clips?: string[] }) {
+  const [turn, setTurn] = useState(0);
+  useEffect(() => setTurn(0), [clips]);
+  const src = clips?.length ? clips[turn % clips.length] : undefined;
+  const single = (clips?.length ?? 0) < 2;
   return (
     <div className="absolute inset-0 motion-reduce:hidden" aria-hidden>
       <AnimatePresence>
@@ -50,7 +54,8 @@ function ClipBackdrop({ src }: { src?: string }) {
             src={src}
             autoPlay
             muted
-            loop
+            loop={single}
+            onEnded={() => setTurn((t) => t + 1)}
             playsInline
             disablePictureInPicture
             initial={{ opacity: 0, scale: 1.06 }}
@@ -65,7 +70,7 @@ function ClipBackdrop({ src }: { src?: string }) {
   );
 }
 
-export const Background = memo(function Background({ particles, clip }: { particles: boolean; clip?: string }) {
+export const Background = memo(function Background({ particles, clips }: { particles: boolean; clips?: string[] }) {
   return (
     <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden" aria-hidden>
       {/* base gradient */}
@@ -89,7 +94,7 @@ export const Background = memo(function Background({ particles, clip }: { partic
         className="animate-drift absolute -bottom-40 left-1/3 h-[40vmax] w-[40vmax] rounded-full opacity-35 blur-[110px]"
         style={{ background: "var(--c2)", animationDuration: "31s", animationDelay: "-20s" }}
       />
-      <ClipBackdrop src={clip} />
+      <ClipBackdrop clips={clips} />
       {/* soft vignette */}
       <div
         className="absolute inset-0"

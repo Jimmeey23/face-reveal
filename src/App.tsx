@@ -572,7 +572,7 @@ export default function App() {
   /* ------------------------------------------------------------ */
   return (
     <div className="relative flex min-h-dvh flex-col">
-      <Background particles={settings.showParticles} clip={started ? person?.animation : undefined} />
+      <Background particles={settings.showParticles} clips={started ? person?.animations : undefined} />
 
       <Header
         quizMode={quizAvailable}

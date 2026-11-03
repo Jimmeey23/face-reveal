@@ -6,8 +6,8 @@ export interface Person {
   funFact?: string;
   yearsApart?: number;
   custom?: boolean;
-  /** Animated clip of this baby, played in the background while they are on screen. */
-  animation?: string;
+  /** Animated clips of this baby, played in turn in the background while they are on screen. */
+  animations?: string[];
 }
 
 export type RevealAnimation =

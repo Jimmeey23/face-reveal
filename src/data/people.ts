@@ -8,6 +8,8 @@ import clip6 from "../assets/bg/clip-6.mp4";
 import clip7 from "../assets/bg/clip-7.mp4";
 import clip8 from "../assets/bg/clip-8.mp4";
 import clip9 from "../assets/bg/clip-9.mp4";
+import clip4b from "../assets/bg/clip-4b.mp4";
+import clip8b from "../assets/bg/clip-8b.mp4";
 import clip11 from "../assets/bg/clip-11.mp4";
 import baby1 from "../assets/baby-1.jpg";
 import baby2 from "../assets/baby-2.jpg";
@@ -27,14 +29,14 @@ export const SAMPLE_PEOPLE: Person[] = [
     id: "sample-1",
     name: "",
     babyImage: baby1,
-    animation: clip1,
+    animations: [clip1],
     adultImage: BLANK_ADULT,
   },
   {
     id: "sample-2",
     name: "",
     babyImage: baby2,
-    animation: clip2,
+    animations: [clip2],
     adultImage: BLANK_ADULT,
   },
   {
@@ -47,42 +49,42 @@ export const SAMPLE_PEOPLE: Person[] = [
     id: "sample-4",
     name: "",
     babyImage: baby4,
-    animation: clip4,
+    animations: [clip4, clip4b],
     adultImage: BLANK_ADULT,
   },
   {
     id: "sample-5",
     name: "",
     babyImage: baby5,
-    animation: clip5,
+    animations: [clip5],
     adultImage: BLANK_ADULT,
   },
   {
     id: "sample-6",
     name: "",
     babyImage: baby6,
-    animation: clip6,
+    animations: [clip6],
     adultImage: BLANK_ADULT,
   },
   {
     id: "sample-7",
     name: "",
     babyImage: baby7,
-    animation: clip7,
+    animations: [clip7],
     adultImage: BLANK_ADULT,
   },
   {
     id: "sample-8",
     name: "",
     babyImage: baby8,
-    animation: clip8,
+    animations: [clip8, clip8b],
     adultImage: BLANK_ADULT,
   },
   {
     id: "sample-9",
     name: "",
     babyImage: baby9,
-    animation: clip9,
+    animations: [clip9],
     adultImage: BLANK_ADULT,
   },
   {
@@ -95,7 +97,7 @@ export const SAMPLE_PEOPLE: Person[] = [
     id: "sample-11",
     name: "",
     babyImage: baby11,
-    animation: clip11,
+    animations: [clip11],
     adultImage: BLANK_ADULT,
   },
 ];
