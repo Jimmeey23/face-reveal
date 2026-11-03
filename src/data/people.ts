@@ -9,60 +9,62 @@ import baby7 from "../assets/baby-7.jpg";
 import baby8 from "../assets/baby-8.jpg";
 import baby9 from "../assets/baby-9.jpg";
 
-// TODO: set real names and adult photos.
+// No name or adult photo yet: the reveal shows a blank card (sound + confetti still play).
+const BLANK_ADULT = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"><rect width="1" height="1" fill="#fff"/></svg>')}`;
+
 export const SAMPLE_PEOPLE: Person[] = [
   {
     id: "sample-1",
-    name: "Person 1",
+    name: "",
     babyImage: baby1,
-    adultImage: baby1,
+    adultImage: BLANK_ADULT,
   },
   {
     id: "sample-2",
-    name: "Person 2",
+    name: "",
     babyImage: baby2,
-    adultImage: baby2,
+    adultImage: BLANK_ADULT,
   },
   {
     id: "sample-3",
-    name: "Person 3",
+    name: "",
     babyImage: baby3,
-    adultImage: baby3,
+    adultImage: BLANK_ADULT,
   },
   {
     id: "sample-4",
-    name: "Person 4",
+    name: "",
     babyImage: baby4,
-    adultImage: baby4,
+    adultImage: BLANK_ADULT,
   },
   {
     id: "sample-5",
-    name: "Person 5",
+    name: "",
     babyImage: baby5,
-    adultImage: baby5,
+    adultImage: BLANK_ADULT,
   },
   {
     id: "sample-6",
-    name: "Person 6",
+    name: "",
     babyImage: baby6,
-    adultImage: baby6,
+    adultImage: BLANK_ADULT,
   },
   {
     id: "sample-7",
-    name: "Person 7",
+    name: "",
     babyImage: baby7,
-    adultImage: baby7,
+    adultImage: BLANK_ADULT,
   },
   {
     id: "sample-8",
-    name: "Person 8",
+    name: "",
     babyImage: baby8,
-    adultImage: baby8,
+    adultImage: BLANK_ADULT,
   },
   {
     id: "sample-9",
-    name: "Person 9",
+    name: "",
     babyImage: baby9,
-    adultImage: baby9,
+    adultImage: BLANK_ADULT,
   },
 ];

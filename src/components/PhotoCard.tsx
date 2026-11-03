@@ -28,7 +28,7 @@ interface Props {
 }
 
 function hintText(name: string, level: number, funFact?: string) {
-  if (level <= 0) return null;
+  if (level <= 0 || !name.trim()) return null;
   const first = name.trim().charAt(0).toUpperCase();
   const blanks = name
     .trim()
@@ -159,7 +159,7 @@ export function PhotoCard(props: Props) {
           <div className="flex min-h-[5.2rem] flex-col items-center justify-center px-3 pt-3 pb-1 text-center">
             {isRevealed ? (
               <>
-                {revealStyle !== "hidden" && (
+                {revealStyle !== "hidden" && person.name && (
                   <div className="animate-stamp font-display text-3xl font-bold tracking-tight sm:text-4xl">
                     <span className="brand-text">{person.name}</span>
                   </div>
@@ -206,7 +206,7 @@ export function PhotoCard(props: Props) {
         {/* Sticker */}
         {!(isRevealed && revealStyle === "hidden") && (
           <div className="absolute -top-9 left-0 z-20 w-[min(72%,19rem)] sm:-top-10 sm:-left-8" style={{ transform: "translateZ(40px)" }}>
-            <Sticker variant={stickerVariant} name={person.name} hideName={revealStyle === "hidden"} />
+            <Sticker variant={stickerVariant} name={person.name} hideName={revealStyle === "hidden" || !person.name} />
           </div>
         )}
 

@@ -38,7 +38,7 @@ export function ProgressStrip({ deck, index, revealed, answers, onJump }: Props)
               key={p.id}
               type="button"
               onClick={() => onJump(i)}
-              title={isRevealed ? p.name : `Baby #${i + 1}`}
+              title={isRevealed && p.name ? p.name : `Baby #${i + 1}`}
               className={cn(
                 "relative h-11 w-11 shrink-0 overflow-hidden rounded-full ring-2 transition-all duration-300",
                 active ? "scale-110 ring-white shadow-[0_0_0_4px_color-mix(in_oklab,var(--c1)_55%,transparent)]" : "ring-white/15 hover:ring-white/50",
