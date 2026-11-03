@@ -19,6 +19,7 @@ import { useLocalStorage } from "./hooks/useLocalStorage";
 import { celebrate, sadRain, sprinkle } from "./lib/confetti";
 import { shuffleArray } from "./lib/image";
 import { sound } from "./lib/sound";
+import { deleteCustomPerson, isSupabaseConfigured, loadCustomPeople, saveCustomPerson } from "./lib/supabase";
 import {
   ANIMATIONS,
   DEFAULT_SETTINGS,
@@ -43,7 +44,10 @@ export default function App() {
   /* Persistent data                                               */
   /* ------------------------------------------------------------ */
   const [settings, setSettings] = useLocalStorage<Settings>("gtb:settings:v1", DEFAULT_SETTINGS);
-  const [customPeople, setCustomPeople, storageError] = useLocalStorage<Person[]>("gtb:people:v1", []);
+  const [legacyPeople, setLegacyPeople, legacyStorageError] = useLocalStorage<Person[]>("gtb:people:v1", []);
+  const [customPeople, setCustomPeople] = useState<Person[]>([]);
+  const [peopleError, setPeopleError] = useState<string | null>(null);
+  const [peopleLoading, setPeopleLoading] = useState(true);
   const [disabledIds, setDisabledIds] = useLocalStorage<string[]>("gtb:disabled:v1", []);
 
   const updateSettings = useCallback(
@@ -51,7 +55,7 @@ export default function App() {
     [setSettings],
   );
 
-  const allPeople = useMemo(() => [...SAMPLE_PEOPLE, ...customPeople], [customPeople]);
+  const allPeople = useMemo(() => [...SAMPLE_PEOPLE, ...legacyPeople, ...customPeople], [legacyPeople, customPeople]);
   const activePeople = useMemo(() => allPeople.filter((p) => !disabledIds.includes(p.id)), [allPeople, disabledIds]);
   const activeKey = activePeople.map((p) => p.id).join("|");
   const activeRef = useRef(activePeople);
@@ -90,6 +94,40 @@ export default function App() {
   const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
   const panelsOpen = showSettings || showPeople || showResults || !started;
   const idle = useIdle(3500, isFullscreen && started && !panelsOpen);
+
+  useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      if (!isSupabaseConfigured) {
+        setPeopleError("Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to persist uploaded photos.");
+        setPeopleLoading(false);
+        return;
+      }
+      try {
+        const savedPeople = await loadCustomPeople();
+        if (cancelled) return;
+        if (savedPeople.length === 0 && legacyPeople.length > 0) {
+          const migrated = [];
+          for (const person of legacyPeople) migrated.push(await saveCustomPerson(person));
+          if (cancelled) return;
+          setCustomPeople(migrated);
+          setLegacyPeople([]);
+        } else {
+          setCustomPeople(savedPeople);
+        }
+        setPeopleError(null);
+      } catch (error) {
+        if (cancelled) return;
+        setPeopleError(error instanceof Error ? error.message : "Couldn't load saved people from Supabase.");
+      } finally {
+        if (!cancelled) setPeopleLoading(false);
+      }
+    };
+    void load();
+    return () => { cancelled = true; };
+    // Load and migrate once for this app session.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const deck = useMemo(() => {
     const byId = new Map(activePeople.map((p) => [p.id, p]));
@@ -477,12 +515,31 @@ export default function App() {
   /* ------------------------------------------------------------ */
   /* People management                                              */
   /* ------------------------------------------------------------ */
-  const addPerson = (p: Person) => {
-    setCustomPeople((prev) => [...prev, p]);
-    showToast(`✨ Added ${p.name} to the deck`);
+  const addPerson = async (p: Person) => {
+    try {
+      const saved = await saveCustomPerson(p);
+      setCustomPeople((prev) => [...prev, saved]);
+      setPeopleError(null);
+      showToast(`✨ Added ${saved.name} to the deck`);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Couldn't save this person to Supabase.";
+      setPeopleError(message);
+      throw error;
+    }
   };
-  const deletePerson = (id: string) => {
-    setCustomPeople((prev) => prev.filter((p) => p.id !== id));
+  const deletePerson = async (id: string) => {
+    if (legacyPeople.some((person) => person.id === id)) {
+      setLegacyPeople((prev) => prev.filter((person) => person.id !== id));
+    } else {
+      try {
+        const cleanupWarning = await deleteCustomPerson(id);
+        setCustomPeople((prev) => prev.filter((p) => p.id !== id));
+        setPeopleError(cleanupWarning ? `Person deleted, but Supabase couldn't remove its photo files: ${cleanupWarning}` : null);
+      } catch (error) {
+        setPeopleError(error instanceof Error ? error.message : "Couldn't delete this person from Supabase.");
+        return;
+      }
+    }
     setDisabledIds((prev) => prev.filter((d) => d !== id));
   };
   const toggleDisabled = (id: string) =>
@@ -655,7 +712,7 @@ export default function App() {
         onToggleDisabled={toggleDisabled}
         onAdd={addPerson}
         onDelete={deletePerson}
-        storageError={storageError}
+        storageError={peopleError ?? legacyStorageError ?? (peopleLoading ? "Connecting to Supabase…" : null)}
       />
 
       <ResultsModal

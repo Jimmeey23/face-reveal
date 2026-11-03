@@ -12,8 +12,8 @@ interface Props {
   people: Person[];
   disabledIds: string[];
   onToggleDisabled: (id: string) => void;
-  onAdd: (p: Person) => void;
-  onDelete: (id: string) => void;
+  onAdd: (p: Person) => Promise<void>;
+  onDelete: (id: string) => Promise<void>;
   storageError: string | null;
 }
 
@@ -92,6 +92,7 @@ export function PeopleManager({ open, onClose, people, disabledIds, onToggleDisa
   const [funFact, setFunFact] = useState("");
   const [years, setYears] = useState("");
   const [busy, setBusy] = useState<"baby" | "adult" | null>(null);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
 
@@ -118,22 +119,29 @@ export function PeopleManager({ open, onClose, people, disabledIds, onToggleDisa
     setError(null);
   };
 
-  const submit = () => {
+  const submit = async () => {
     if (!name.trim()) return setError("Give this cutie a name.");
     if (!baby) return setError("Add a baby photo.");
     if (!adult) return setError("Add a grown-up photo.");
     const y = parseInt(years, 10);
-    onAdd({
-      id: uid("custom"),
-      name: name.trim(),
-      babyImage: baby,
-      adultImage: adult,
-      funFact: funFact.trim() || undefined,
-      yearsApart: Number.isFinite(y) && y > 0 ? y : undefined,
-      custom: true,
-    });
-    reset();
-    setShowForm(false);
+    setSaving(true);
+    try {
+      await onAdd({
+        id: uid("custom"),
+        name: name.trim(),
+        babyImage: baby,
+        adultImage: adult,
+        funFact: funFact.trim() || undefined,
+        yearsApart: Number.isFinite(y) && y > 0 ? y : undefined,
+        custom: true,
+      });
+      reset();
+      setShowForm(false);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Couldn't save these photos to Supabase.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const activeCount = people.filter((p) => !disabledIds.includes(p.id)).length;
@@ -154,7 +162,7 @@ export function PeopleManager({ open, onClose, people, disabledIds, onToggleDisa
               </span>
               <span>
                 <span className="block font-display text-lg font-semibold">Add your own baby</span>
-                <span className="block text-xs text-white/50">Upload a baby photo + a recent photo. Stored privately in this browser.</span>
+                <span className="block text-xs text-white/50">Upload a baby photo + a recent photo. Saved privately to Supabase.</span>
               </span>
             </span>
             <span className={cn("text-white/50 transition-transform", showForm && "rotate-90")}>
@@ -245,7 +253,8 @@ export function PeopleManager({ open, onClose, people, disabledIds, onToggleDisa
                       onClick={submit}
                       className="brand-gradient flex items-center gap-2 rounded-xl px-5 py-2.5 font-display text-sm font-bold shadow-lg transition hover:brightness-110 active:scale-95"
                     >
-                      <ImagePlus size={16} /> Add to deck
+                      {saving ? <Loader2 size={16} className="animate-spin" /> : <ImagePlus size={16} />}
+                      {saving ? "Saving photos…" : "Add to deck"}
                     </button>
                   </div>
                 </div>
@@ -316,7 +325,7 @@ export function PeopleManager({ open, onClose, people, disabledIds, onToggleDisa
                   {p.custom && (
                     <button
                       type="button"
-                      onClick={() => onDelete(p.id)}
+                      onClick={() => void onDelete(p.id)}
                       aria-label={`Delete ${p.name}`}
                       className="grid h-9 w-9 place-items-center rounded-xl text-white/50 transition hover:bg-rose-500/20 hover:text-rose-300"
                     >
