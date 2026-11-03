@@ -19,6 +19,7 @@ export type RevealAnimation =
   | "shatter";
 
 export type AnimationSetting = RevealAnimation | "random";
+export type RevealStyle = "photo" | "name" | "hidden";
 export type Mode = "timer" | "manual";
 export type Palette = "sunset" | "ocean" | "candy" | "forest";
 export type Phase = "idle" | "counting" | "revealing" | "revealed";
@@ -31,6 +32,7 @@ export interface Settings {
   autoAdvance: boolean;
   autoAdvanceDelay: number;
   animation: AnimationSetting;
+  revealStyle: RevealStyle;
   sound: boolean;
   confetti: boolean;
   quizMode: boolean;
@@ -47,6 +49,7 @@ export const DEFAULT_SETTINGS: Settings = {
   autoAdvance: false,
   autoAdvanceDelay: 6,
   animation: "morph",
+  revealStyle: "photo",
   sound: true,
   confetti: true,
   quizMode: false,

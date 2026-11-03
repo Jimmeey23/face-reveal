@@ -17,7 +17,7 @@ import {
   Gamepad2,
   Wand2,
 } from "lucide-react";
-import { ANIMATIONS, DEFAULT_SETTINGS, PALETTES, type Mode, type Settings } from "../types";
+import { ANIMATIONS, DEFAULT_SETTINGS, PALETTES, type Mode, type RevealStyle, type Settings } from "../types";
 import { Kbd, SectionTitle, Segmented, Slider, Toggle } from "./ui";
 import { cn } from "../utils/cn";
 
@@ -93,6 +93,20 @@ export function SettingsPanel({ open, onClose, settings, onChange }: Props) {
                     { value: "manual", label: "Manual reveal", icon: <Hand size={14} /> },
                   ]}
                 />
+              </div>
+              <div className="px-3 py-2">
+                <div className="mb-2 text-sm font-bold text-white/95">After the guess</div>
+                <Segmented<RevealStyle>
+                  className="w-full"
+                  value={settings.revealStyle}
+                  onChange={(revealStyle) => onChange({ revealStyle })}
+                  options={[
+                    { value: "photo", label: "Adult photo" },
+                    { value: "name", label: "Name only" },
+                    { value: "hidden", label: "Baby only" },
+                  ]}
+                />
+                <p className="mt-1 px-1 text-xs text-white/50">Choose what appears when a baby is revealed.</p>
               </div>
               <Slider
                 label="Timer length"

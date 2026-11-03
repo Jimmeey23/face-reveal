@@ -6,10 +6,11 @@ export type StickerVariant = "question" | "reveal" | "correct" | "wrong" | "miss
 interface Props {
   variant: StickerVariant;
   name?: string;
+  hideName?: boolean;
   className?: string;
 }
 
-const CONTENT: Record<StickerVariant, { text: (n: string) => string; emoji: string; bg: string; tail: string }> = {
+const CONTENT: Record<StickerVariant, { text: (n: string, hideName: boolean) => string; emoji: string; bg: string; tail: string }> = {
   question: {
     text: () => "Can you guess who this cute lil baby is?",
     emoji: "👶",
@@ -17,32 +18,32 @@ const CONTENT: Record<StickerVariant, { text: (n: string) => string; emoji: stri
     tail: "color-mix(in oklab, var(--c1) 45%, var(--c3))",
   },
   reveal: {
-    text: (n) => `Ta-da! It's ${n}!`,
+    text: (n, hideName) => hideName ? "The mystery stays!" : `Ta-da! It's ${n}!`,
     emoji: "🎉",
     bg: "linear-gradient(135deg, var(--c2) 0%, var(--c1) 100%)",
     tail: "color-mix(in oklab, var(--c2) 45%, var(--c1))",
   },
   correct: {
-    text: (n) => `Nailed it! It's ${n}!`,
+    text: (n, hideName) => hideName ? "Great guess!" : `Nailed it! It's ${n}!`,
     emoji: "🏆",
     bg: "linear-gradient(135deg, #34d399 0%, #10b981 100%)",
     tail: "#10b981",
   },
   wrong: {
-    text: (n) => `Nope — it's ${n}!`,
+    text: (n, hideName) => hideName ? "Nice try!" : `Nope — it's ${n}!`,
     emoji: "😅",
     bg: "linear-gradient(135deg, #fb7185 0%, #e11d48 100%)",
     tail: "#e11d48",
   },
   missed: {
-    text: (n) => `Time's up! It's ${n}!`,
+    text: (n, hideName) => hideName ? "Time's up!" : `Time's up! It's ${n}!`,
     emoji: "⏰",
     bg: "linear-gradient(135deg, #fbbf24 0%, #f97316 100%)",
     tail: "#f97316",
   },
 };
 
-export function Sticker({ variant, name = "", className }: Props) {
+export function Sticker({ variant, name = "", hideName = false, className }: Props) {
   const c = CONTENT[variant];
   return (
     <AnimatePresence mode="wait">
@@ -63,7 +64,7 @@ export function Sticker({ variant, name = "", className }: Props) {
               className="text-stroke-dark block font-display text-[1.15rem] leading-[1.15] font-bold sm:text-[1.3rem]"
               style={{ textWrap: "balance" }}
             >
-              {c.text(name)}
+              {c.text(name, hideName)}
             </span>
             {/* speech tail: white outline + colored fill */}
             <span className="absolute -bottom-[21px] left-8 h-0 w-0 border-x-[14px] border-t-[18px] border-x-transparent border-t-white" />

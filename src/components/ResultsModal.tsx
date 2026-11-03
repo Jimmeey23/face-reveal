@@ -1,6 +1,6 @@
 import { motion } from "motion/react";
 import { ArrowRight, RotateCcw, Shuffle, Users } from "lucide-react";
-import type { AnswerResult, Person, QuizStats } from "../types";
+import type { AnswerResult, Person, QuizStats, RevealStyle } from "../types";
 import { Modal } from "./ui";
 import { cn } from "../utils/cn";
 
@@ -11,6 +11,7 @@ interface Props {
   answers: Record<string, AnswerResult>;
   stats: QuizStats;
   quizMode: boolean;
+  revealStyle: RevealStyle;
   onReplay: () => void;
   onShuffleReplay: () => void;
   onManagePeople: () => void;
@@ -24,7 +25,7 @@ function rating(pct: number) {
   return { title: "Who ARE these people?! 😅", sub: "Maybe peek a little next time." };
 }
 
-export function ResultsModal({ open, onClose, deck, answers, stats, quizMode, onReplay, onShuffleReplay, onManagePeople }: Props) {
+export function ResultsModal({ open, onClose, deck, answers, stats, quizMode, revealStyle, onReplay, onShuffleReplay, onManagePeople }: Props) {
   const total = deck.length;
   const pct = total ? Math.round((stats.correct / total) * 100) : 0;
   const r = rating(pct);
@@ -46,7 +47,9 @@ export function ResultsModal({ open, onClose, deck, answers, stats, quizMode, on
             {quizMode ? (pct >= 50 ? "🎉" : "🙈") : "🎉"}
           </motion.div>
           <h2 className="font-display text-3xl font-bold sm:text-4xl">{quizMode ? r.title : "That's everyone!"}</h2>
-          <p className="mt-1 text-white/60">{quizMode ? r.sub : "All the babies have grown up before your very eyes."}</p>
+          <p className="mt-1 text-white/60">
+            {quizMode ? r.sub : revealStyle === "photo" ? "All the babies have grown up before your very eyes." : "The baby photos are all revealed."}
+          </p>
         </div>
 
         {quizMode && (
@@ -116,15 +119,19 @@ export function ResultsModal({ open, onClose, deck, answers, stats, quizMode, on
                 >
                   <div className="flex items-center gap-1">
                     <img src={p.babyImage} alt="" className="h-12 w-12 rounded-xl object-cover" />
-                    <ArrowRight size={12} className="text-white/40" />
-                    <img src={p.adultImage} alt="" className="h-12 w-12 rounded-xl object-cover" />
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="font-display text-sm font-semibold">{p.name}</span>
-                    {res && (
-                      <span className="text-xs">{res === "correct" ? "✅" : res === "wrong" ? "❌" : "⏰"}</span>
+                    {revealStyle === "photo" && (
+                      <>
+                        <ArrowRight size={12} className="text-white/40" />
+                        <img src={p.adultImage} alt="" className="h-12 w-12 rounded-xl object-cover" />
+                      </>
                     )}
                   </div>
+                  {(revealStyle !== "hidden" || res) && (
+                    <div className="flex items-center gap-1.5">
+                      {revealStyle !== "hidden" && <span className="font-display text-sm font-semibold">{p.name}</span>}
+                      {res && <span className="text-xs">{res === "correct" ? "✅" : res === "wrong" ? "❌" : "⏰"}</span>}
+                    </div>
+                  )}
                 </motion.div>
               );
             })}

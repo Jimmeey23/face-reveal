@@ -1,7 +1,7 @@
 import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
 import { Check, Clock, X } from "lucide-react";
 import { useCallback, type PointerEvent } from "react";
-import type { AnswerResult, Person, Phase, RevealAnimation } from "../types";
+import type { AnswerResult, Person, Phase, RevealAnimation, RevealStyle } from "../types";
 import { RevealStage } from "./RevealStage";
 import { Sticker, type StickerVariant } from "./Sticker";
 import { TimerRing } from "./TimerRing";
@@ -11,6 +11,7 @@ interface Props {
   person: Person;
   phase: Phase;
   animation: RevealAnimation;
+  revealStyle: RevealStyle;
   animateReveal: boolean;
   peeking: boolean;
   hintLevel: number;
@@ -44,6 +45,7 @@ export function PhotoCard(props: Props) {
     person,
     phase,
     animation,
+    revealStyle,
     animateReveal,
     peeking,
     hintLevel,
@@ -87,6 +89,7 @@ export function PhotoCard(props: Props) {
   }
 
   const hint = !isRevealed ? hintText(person.name, hintLevel, person.funFact) : null;
+  const revealImage = revealStyle === "photo" ? person.adultImage : person.babyImage;
 
   return (
     <div className="relative w-full" style={{ perspective: 1400 }}>
@@ -113,12 +116,12 @@ export function PhotoCard(props: Props) {
             <RevealStage
               key={person.id}
               baby={person.babyImage}
-              adult={person.adultImage}
+              adult={revealImage}
               animation={animation}
               revealed={stageRevealed}
               animate={animateReveal}
               yearsApart={person.yearsApart}
-              peeking={peeking}
+              peeking={revealStyle === "photo" && peeking}
             />
             {/* glossy sheen + inner vignette */}
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/25 mix-blend-overlay" />
@@ -156,22 +159,24 @@ export function PhotoCard(props: Props) {
           <div className="flex min-h-[5.2rem] flex-col items-center justify-center px-3 pt-3 pb-1 text-center">
             {isRevealed ? (
               <>
-                <div className="animate-stamp font-display text-3xl font-bold tracking-tight sm:text-4xl">
-                  <span className="brand-text">{person.name}</span>
-                </div>
-                {showFunFact && person.funFact && (
-                  <p className="animate-fade-up mt-1 max-w-[95%] font-hand text-lg leading-snug text-neutral-600" style={{ animationDelay: "0.35s" }}>
-                    {person.funFact}
-                  </p>
+                {revealStyle !== "hidden" && (
+                  <div className="animate-stamp font-display text-3xl font-bold tracking-tight sm:text-4xl">
+                    <span className="brand-text">{person.name}</span>
+                  </div>
                 )}
-                {person.yearsApart && (
-                  <span
-                    className="animate-fade-up mt-1.5 inline-flex items-center gap-1 rounded-full bg-neutral-100 px-2.5 py-0.5 text-[11px] font-black tracking-wider text-neutral-500 uppercase"
-                    style={{ animationDelay: "0.5s" }}
-                  >
-                    ⏳ {person.yearsApart} years later
-                  </span>
-                )}
+                {revealStyle === "photo" && showFunFact && person.funFact && (
+                    <p className="animate-fade-up mt-1 max-w-[95%] font-hand text-lg leading-snug text-neutral-600" style={{ animationDelay: "0.35s" }}>
+                      {person.funFact}
+                    </p>
+                  )}
+                {revealStyle === "photo" && person.yearsApart && (
+                    <span
+                      className="animate-fade-up mt-1.5 inline-flex items-center gap-1 rounded-full bg-neutral-100 px-2.5 py-0.5 text-[11px] font-black tracking-wider text-neutral-500 uppercase"
+                      style={{ animationDelay: "0.5s" }}
+                    >
+                      ⏳ {person.yearsApart} years later
+                    </span>
+                  )}
               </>
             ) : (
               <>
@@ -199,9 +204,11 @@ export function PhotoCard(props: Props) {
         />
 
         {/* Sticker */}
-        <div className="absolute -top-9 left-0 z-20 w-[min(72%,19rem)] sm:-top-10 sm:-left-8" style={{ transform: "translateZ(40px)" }}>
-          <Sticker variant={stickerVariant} name={person.name} />
-        </div>
+        {!(isRevealed && revealStyle === "hidden") && (
+          <div className="absolute -top-9 left-0 z-20 w-[min(72%,19rem)] sm:-top-10 sm:-left-8" style={{ transform: "translateZ(40px)" }}>
+            <Sticker variant={stickerVariant} name={person.name} hideName={revealStyle === "hidden"} />
+          </div>
+        )}
 
         {/* Timer */}
         {showTimer && (

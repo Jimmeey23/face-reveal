@@ -596,6 +596,7 @@ export default function App() {
                       person={person}
                       phase={phase}
                       animation={currentAnimation}
+                      revealStyle={settings.revealStyle}
                       animateReveal={animateReveal}
                       peeking={peeking}
                       hintLevel={hintLevel}
@@ -722,6 +723,7 @@ export default function App() {
         answers={answers}
         stats={stats}
         quizMode={quizAvailable}
+        revealStyle={settings.revealStyle}
         onReplay={() => restart(false)}
         onShuffleReplay={() => restart(true)}
         onManagePeople={() => {
